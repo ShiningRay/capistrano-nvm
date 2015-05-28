@@ -7,7 +7,7 @@ namespace :nvm do
         exit 1
       end
 
-      unless test "[ -d #{fetch(:nvm_node_path)} ]"
+      unless test "[ -d #{fetch(:nvm_node_path)} -o -d #{fetch(:nvm_new_node_path)} ]"
         error "nvm: #{nvm_node} is not installed or not found in #{fetch(:nvm_node_path)}"
         exit 1
       end
@@ -50,6 +50,15 @@ namespace :load do
 
     set :nvm_roles, fetch(:nvm_roles, :all)
     set :nvm_node_path, -> { "#{fetch(:nvm_path)}/#{fetch(:nvm_node)}" }
+    set :nvm_new_node_path, -> { 
+      nvm_node = fetch(:nvm_node)
+      if nvm_node =~ /\Aiojs-(.*)\z/
+        "#{fetch(:nvm_path)}/versions/io.js/#$1"
+      else
+        "#{fetch(:nvm_path)}/versions/node/#{fetch(:nvm_node)}"
+      end
+    }
+
     set :nvm_map_bins, %w{node npm}
   end
 end
